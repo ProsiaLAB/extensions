@@ -686,4 +686,19 @@ pub mod types {
 
     /// 1-dimensional boolean vector.
     pub type BVector = Array1<bool>;
+
+    #[cfg(feature = "complex")]
+    use num_complex::Complex;
+
+    #[cfg(feature = "complex")]
+    /// A fixed-length array of complex ([f64]) numbers.
+    pub type CVector = Array1<Complex<f64>>;
+
+    #[cfg(feature = "complex")]
+    /// A 2-dimensional array (matrix) of complex ([f64]) numbers.
+    pub type CMatrix = Array2<Complex<f64>>;
+
+    #[cfg(feature = "complex")]
+    /// A 3-dimensional array (tensor) of complex ([f64]) numbers.
+    pub type CTensor = Array3<Complex<f64>>;
 }

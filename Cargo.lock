@@ -13,6 +13,7 @@ name = "extensions"
 version = "0.1.0"
 dependencies = [
  "ndarray",
+ "num-complex",
 ]
 
 [[package]]
