@@ -421,6 +421,189 @@ pub mod arrays {
             ((&y0 + &y1) / 2.0 * (&x1 - &x0)).sum()
         }
     }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use ndarray::{Array1, Array2, array};
+
+        #[test]
+        fn test_maxval_minval_nonempty() {
+            let a = array![1.0, 3.5, 2.2, -5.1, 7.3];
+            assert_eq!(a.maxval(), Ok(7.3));
+            assert_eq!(a.minval(), Ok(-5.1));
+        }
+
+        #[test]
+        fn test_maxval_minval_empty() {
+            let a: Array1<f64> = Array1::from_vec(vec![]);
+            assert_eq!(a.maxval(), Err(ExtremaError::EmptyArray));
+            assert_eq!(a.minval(), Err(ExtremaError::EmptyArray));
+        }
+
+        #[test]
+        fn test_maxval_along_axis0() {
+            let a = array![[1.0, 4.2, 2.1], [3.3, -1.5, 7.7]];
+            let result = a.maxval_along(Axis(0)).unwrap();
+            assert_eq!(result, array![3.3, 4.2, 7.7]);
+        }
+
+        #[test]
+        fn test_minval_along_axis0() {
+            let a = array![[1.0, 4.2, 2.1], [3.3, -1.5, 7.7]];
+            let result = a.minval_along(Axis(0)).unwrap();
+            assert_eq!(result, array![1.0, -1.5, 2.1]);
+        }
+
+        #[test]
+        fn test_maxval_along_axis1() {
+            let a = array![[1.0, 4.2, 2.1], [3.3, -1.5, 7.7]];
+            let result = a.maxval_along(Axis(1)).unwrap();
+            assert_eq!(result, array![4.2, 7.7]);
+        }
+
+        #[test]
+        fn test_minval_along_axis1() {
+            let a = array![[1.0, 4.2, 2.1], [3.3, -1.5, 7.7]];
+            let result = a.minval_along(Axis(1)).unwrap();
+            assert_eq!(result, array![1.0, -1.5]);
+        }
+
+        #[test]
+        fn test_argmax_argmin() {
+            let a = array![10.0, 3.1, 50.5, -2.2, 50.5];
+            assert_eq!(a.argmax(), Ok(2)); // first 50.5
+            assert_eq!(a.argmin(), Ok(3));
+        }
+
+        #[test]
+        fn test_argmax_along_axis0() {
+            let a = array![[1.0, 4.2, 2.1], [3.3, -1.5, 7.7]];
+            let result = a.argmax_along(Axis(0)).unwrap();
+            assert_eq!(result, array![1, 0, 1]);
+        }
+
+        #[test]
+        fn test_argmin_along_axis0() {
+            let a = array![[1.0, 4.2, 2.1], [3.3, -1.5, 7.7]];
+            let result = a.argmin_along(Axis(0)).unwrap();
+            assert_eq!(result, array![0, 1, 0]);
+        }
+
+        #[test]
+        fn test_argmax_along_axis1() {
+            let a = array![[1.0, 4.2, 2.1], [3.3, -1.5, 7.7]];
+            let result = a.argmax_along(Axis(1)).unwrap();
+            assert_eq!(result, array![1, 2]);
+        }
+
+        #[test]
+        fn test_argmin_along_axis1() {
+            let a = array![[1.0, 4.2, 2.1], [3.3, -1.5, 7.7]];
+            let result = a.argmin_along(Axis(1)).unwrap();
+            assert_eq!(result, array![0, 1]);
+        }
+
+        #[test]
+        fn test_maxval_minval_with_nan() {
+            let a = array![1.0, f64::NAN, 3.5];
+            // Now should return UndefinedOrder error when NaN is present
+            assert_eq!(a.maxval(), Err(ExtremaError::UndefinedOrder));
+            assert_eq!(a.minval(), Err(ExtremaError::UndefinedOrder));
+        }
+
+        #[test]
+        fn test_maxval_along_axis_with_nan() {
+            let a = array![[1.0, f64::NAN, 2.0], [3.0, 4.0, 5.0]];
+
+            // Along axis 0: column 1 has a NaN, so should return UndefinedOrder error
+            assert_eq!(a.maxval_along(Axis(0)), Err(ExtremaError::UndefinedOrder));
+
+            // Along axis 1: first row has a NaN, so should return UndefinedOrder error
+            assert_eq!(a.maxval_along(Axis(1)), Err(ExtremaError::UndefinedOrder));
+        }
+
+        #[test]
+        fn test_minval_along_axis_with_nan() {
+            let a = array![[1.0, 4.0, 2.0], [f64::NAN, -1.5, 7.0]];
+
+            // Both axes should return UndefinedOrder error due to NaN presence
+            assert_eq!(a.minval_along(Axis(0)), Err(ExtremaError::UndefinedOrder));
+            assert_eq!(a.minval_along(Axis(1)), Err(ExtremaError::UndefinedOrder));
+        }
+
+        #[test]
+        fn test_argmax_argmin_with_nan() {
+            let a = array![1.0, f64::NAN, 3.5];
+            // Should return UndefinedOrder error when NaN is present
+            assert_eq!(a.argmax(), Err(ExtremaError::UndefinedOrder));
+            assert_eq!(a.argmin(), Err(ExtremaError::UndefinedOrder));
+        }
+
+        #[test]
+        fn test_argmax_argmin_along_with_nan() {
+            let a = array![[1.0, f64::NAN, 2.0], [3.0, 4.0, 5.0]];
+
+            // Should return UndefinedOrder error due to NaN presence
+            assert_eq!(a.argmax_along(Axis(0)), Err(ExtremaError::UndefinedOrder));
+            assert_eq!(a.argmin_along(Axis(0)), Err(ExtremaError::UndefinedOrder));
+            assert_eq!(a.argmax_along(Axis(1)), Err(ExtremaError::UndefinedOrder));
+            assert_eq!(a.argmin_along(Axis(1)), Err(ExtremaError::UndefinedOrder));
+        }
+
+        #[test]
+        fn test_all_methods_empty_2d() {
+            let a: Array2<f64> = Array2::from_shape_vec((0, 3), vec![]).unwrap();
+            assert_eq!(a.maxval(), Err(ExtremaError::EmptyArray));
+            assert_eq!(a.minval(), Err(ExtremaError::EmptyArray));
+            assert_eq!(a.maxval_along(Axis(0)), Err(ExtremaError::EmptyArray));
+            assert_eq!(a.minval_along(Axis(1)), Err(ExtremaError::EmptyArray));
+            assert_eq!(a.argmax(), Err(ExtremaError::EmptyArray));
+            assert_eq!(a.argmin(), Err(ExtremaError::EmptyArray));
+            assert_eq!(a.argmax_along(Axis(0)), Err(ExtremaError::EmptyArray));
+            assert_eq!(a.argmin_along(Axis(1)), Err(ExtremaError::EmptyArray));
+        }
+
+        #[test]
+        fn test_valid_arrays_without_nan() {
+            // Test that normal arrays (without NaN) work correctly
+            let a = array![1, 5, 3, 2, 4];
+            assert_eq!(a.maxval(), Ok(5));
+            assert_eq!(a.minval(), Ok(1));
+            assert_eq!(a.argmax(), Ok(1));
+            assert_eq!(a.argmin(), Ok(0));
+
+            let b = array![[1, 2, 3], [4, 5, 6]];
+            assert_eq!(b.maxval_along(Axis(0)).unwrap(), array![4, 5, 6]);
+            assert_eq!(b.minval_along(Axis(0)).unwrap(), array![1, 2, 3]);
+            assert_eq!(b.argmax_along(Axis(1)).unwrap(), array![2, 2]);
+            assert_eq!(b.argmin_along(Axis(1)).unwrap(), array![0, 0]);
+        }
+
+        #[test]
+        fn test_single_element_arrays() {
+            let a = array![42.0];
+            assert_eq!(a.maxval(), Ok(42.0));
+            assert_eq!(a.minval(), Ok(42.0));
+            assert_eq!(a.argmax(), Ok(0));
+            assert_eq!(a.argmin(), Ok(0));
+
+            let b = array![[5.0]];
+            assert_eq!(b.maxval_along(Axis(0)).unwrap(), array![5.0]);
+            assert_eq!(b.minval_along(Axis(1)).unwrap(), array![5.0]);
+            assert_eq!(b.argmax_along(Axis(0)).unwrap(), array![0]);
+            assert_eq!(b.argmin_along(Axis(1)).unwrap(), array![0]);
+        }
+
+        #[test]
+        fn test_single_nan_element() {
+            let a = array![f64::NAN];
+            assert_eq!(a.maxval(), Err(ExtremaError::UndefinedOrder));
+            assert_eq!(a.minval(), Err(ExtremaError::UndefinedOrder));
+            assert_eq!(a.argmax(), Err(ExtremaError::UndefinedOrder));
+            assert_eq!(a.argmin(), Err(ExtremaError::UndefinedOrder));
+        }
+    }
 }
 
 pub mod types {
