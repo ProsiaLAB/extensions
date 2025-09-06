@@ -422,6 +422,41 @@ pub mod arrays {
         }
     }
 
+    /// Returns the index of the largest element in a sorted slice that is
+    /// less than or equal to the given value.
+    ///
+    /// # Arguments
+    /// * `val` - The target value to compare against.
+    /// * `array` - A slice of `f64` values. Must be sorted in non-decreasing order.
+    ///
+    /// # Returns
+    /// * `Some(index)` if an element exists in `array` such that:
+    ///   - `array[index] <= val`
+    ///   - and `array[index + 1] > val` (or `index` is the last valid element).
+    /// * `None` if:
+    ///   - the slice is empty
+    ///   - `val` is smaller than the first element
+    ///   - `val` is greater than or equal to the last element
+    ///
+    /// # Complexity
+    /// Runs in O(log n) time using binary search via `partition_point`.
+    ///
+    /// # Example
+    /// ```
+    /// let arr = [1.0, 2.5, 4.0, 7.0];
+    /// assert_eq!(find_index_le(3.0, &arr), Some(1)); // arr[1] = 2.5
+    /// assert_eq!(find_index_le(1.0, &arr), Some(0));
+    /// assert_eq!(find_index_le(7.0, &arr), None);
+    /// assert_eq!(find_index_le(0.5, &arr), None);
+    /// ```
+    pub fn find_index_le(val: f64, array: &[f64]) -> Option<usize> {
+        if array.is_empty() || val < array[0] || val >= array[array.len() - 1] {
+            return None;
+        }
+        let idx = array.partition_point(|&x| x <= val);
+        if idx > 0 { Some(idx - 1) } else { None }
+    }
+
     #[cfg(test)]
     mod tests {
         use super::*;
