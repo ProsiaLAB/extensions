@@ -660,22 +660,31 @@ pub mod arrays {
 pub mod types {
     use ndarray::{Array1, Array2, Array3, Array4, ArrayView1};
 
+    /// Generic Vector (1D array)
+    pub type Vector<T> = Array1<T>;
+
     /// n-dimensional real vector (1D array).
     pub type RVector = Array1<f64>;
 
     /// n-dimensional real vector view (1D view).
     pub type RVecView<'a> = ArrayView1<'a, f64>;
 
-    /// A real matrix (2-dimensional ndarray).
+    /// Generic matrix (2D array)
+    pub type Matrix<T> = Array2<T>;
+
+    /// A real matrix (2D ndarray).
     pub type RMatrix = Array2<f64>;
 
-    /// n-dimenstional real matrix view (1d view)
+    /// n-dimensional real matrix view (2D view)
     pub type RMatView<'a> = ndarray::ArrayView2<'a, f64>;
 
-    /// A real tensor (3-dimensional ndarray).
+    /// Generic tensor (3D array)
+    pub type Tensor<T> = Array3<T>;
+
+    /// A real tensor (3D ndarray).
     pub type RTensor = Array3<f64>;
 
-    /// A 4-dimensional real tensor (4-dimensional ndarray).
+    /// A 4-dimensional real tensor (4D ndarray).
     pub type RTensor4 = Array4<f64>;
 
     /// 1-dimensional unsigned-integer vector.
