@@ -672,6 +672,9 @@ pub mod types {
     /// Generic matrix (2D array)
     pub type Matrix<T> = Array2<T>;
 
+    /// 2-dimensional unsigned-integer matrix.
+    pub type UMatrix = Array2<usize>;
+
     /// A real matrix (2D ndarray).
     pub type RMatrix = Array2<f64>;
 
