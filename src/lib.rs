@@ -473,6 +473,41 @@ pub mod arrays {
         if idx > 0 { Some(idx - 1) } else { None }
     }
 
+    /// Returns the index of the smallest element in a sorted slice that is
+    /// greater than or equal to the given value.
+    ///
+    /// # Arguments
+    /// * `val` - The target value to compare against.
+    /// * `array` - A slice of `f64` values. Must be sorted in non-decreasing order.
+    ///
+    /// # Returns
+    /// * `Some(index)` if an element exists in `array` such that:
+    ///   - `array[index] >= val`
+    ///   - and `array[index - 1] < val` (or `index` is the first valid element).
+    /// * `None` if:
+    ///   - the slice is empty
+    ///   - `val` is smaller than or equal to the first element
+    ///   - `val` is greater than the last element
+    ///
+    /// # Complexity
+    /// Runs in O(log n) time using binary search via `partition_point`.
+    ///
+    /// # Example
+    /// ```
+    /// let arr = [1.0, 2.5, 4.0, 7.0];
+    /// assert_eq!(find_index_ge(3.0, &arr), Some(2)); // arr[2] = 4.0
+    /// assert_eq!(find_index_ge(2.5, &arr), Some(1));
+    /// assert_eq!(find_index_ge(0.5, &arr), None);
+    /// assert_eq!(find_index_ge(7.0, &arr), None);
+    /// ```
+    pub fn find_index_ge(val: f64, array: &[f64]) -> Option<usize> {
+        if array.is_empty() || val > array[array.len() - 1] || val <= array[0] {
+            return None;
+        }
+        let idx = array.partition_point(|&x| x < val);
+        if idx < array.len() { Some(idx) } else { None }
+    }
+
     #[cfg(test)]
     mod tests {
         use super::*;
