@@ -508,6 +508,81 @@ pub mod arrays {
         if idx < array.len() { Some(idx) } else { None }
     }
 
+    /// Returns the index of the first element in a sorted slice that is
+    /// **greater than or equal to** `val`.
+    ///
+    /// This is equivalent to [`find_index_ge`] but clamps the result to valid indices.
+    /// If `val` is less than or equal to the first element, returns `0`.  
+    /// If `val` is greater than or equal to the last element, returns `array.len()`.
+    ///
+    /// # Examples
+    /// ```
+    /// let arr = [1.0, 3.0, 5.0, 7.0];
+    ///
+    /// // Insert before any elements ≥ 4.0 → index 2
+    /// assert_eq!(lower_bound_index(4.0, &arr), 2);
+    ///
+    /// // Value below first → index 0
+    /// assert_eq!(lower_bound_index(0.5, &arr), 0);
+    ///
+    /// // Value above last → index len = 4
+    /// assert_eq!(lower_bound_index(10.0, &arr), arr.len());
+    /// ```
+    /// # See Also
+    /// [`upper_bound_index`], [`find_index_ge`]
+    pub fn lower_bound_index(val: f64, array: &[f64]) -> usize {
+        if array.is_empty() {
+            return 0;
+        }
+
+        if val <= array[0] {
+            return 0;
+        }
+
+        if val >= array[array.len() - 1] {
+            return array.len();
+        }
+
+        array.partition_point(|&x| x < val)
+    }
+
+    /// Returns the index of the **last element ≤ `val`** in a sorted slice.
+    ///
+    /// This behaves similarly to [`find_index_le`] but clamps the result to valid indices.
+    /// If `val` is less than the first element, returns `0`.  
+    /// If `val` is greater than or equal to the last element, returns `array.len() - 1`.
+    ///
+    /// # Examples
+    /// ```
+    /// let arr = [1.0, 3.0, 5.0, 7.0];
+    ///
+    /// // Largest element ≤ 4.0 is 3.0 at index 1
+    /// assert_eq!(upper_bound_index(4.0, &arr), 1);
+    ///
+    /// // Value below first → clamp to 0
+    /// assert_eq!(upper_bound_index(0.5, &arr), 0);
+    ///
+    /// // Value above last → clamp to last index = 3
+    /// assert_eq!(upper_bound_index(10.0, &arr), arr.len() - 1);
+    /// ```
+    /// # See Also
+    /// [`lower_bound_index`], [`find_index_le`]
+    pub fn upper_bound_index(val: f64, array: &[f64]) -> usize {
+        if array.is_empty() {
+            return 0;
+        }
+
+        if val < array[0] {
+            return 0;
+        }
+
+        if val >= array[array.len() - 1] {
+            return array.len() - 1;
+        }
+
+        array.partition_point(|&x| x <= val) - 1
+    }
+
     #[cfg(test)]
     mod tests {
         use super::*;
