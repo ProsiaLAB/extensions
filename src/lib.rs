@@ -58,8 +58,8 @@ pub mod arrays {
         ///
         /// ```
         /// use ndarray::array;
-        /// use scorpia::utils::arrays::ArrayExtrema;
-        /// use scorpia::utils::arrays::ExtremaError;
+        /// use prosia_extensions::arrays::ArrayExtrema;
+        /// use prosia_extensions::arrays::ExtremaError;
         ///
         /// let a = array![1, 3, 2];
         /// assert_eq!(a.maxval(), Ok(3));
@@ -459,6 +459,8 @@ pub mod arrays {
     ///
     /// # Example
     /// ```
+    /// use prosia_extensions::arrays::find_index_le;
+    ///
     /// let arr = [1.0, 2.5, 4.0, 7.0];
     /// assert_eq!(find_index_le(3.0, &arr), Some(1)); // arr[1] = 2.5
     /// assert_eq!(find_index_le(1.0, &arr), Some(0));
@@ -494,11 +496,13 @@ pub mod arrays {
     ///
     /// # Example
     /// ```
+    /// use prosia_extensions::arrays::find_index_ge;
+    ///
     /// let arr = [1.0, 2.5, 4.0, 7.0];
     /// assert_eq!(find_index_ge(3.0, &arr), Some(2)); // arr[2] = 4.0
     /// assert_eq!(find_index_ge(2.5, &arr), Some(1));
     /// assert_eq!(find_index_ge(0.5, &arr), None);
-    /// assert_eq!(find_index_ge(7.0, &arr), None);
+    /// assert_eq!(find_index_ge(8.0, &arr), None);
     /// ```
     pub fn find_index_ge(val: f64, array: &[f64]) -> Option<usize> {
         if array.is_empty() || val > array[array.len() - 1] || val <= array[0] {
@@ -517,6 +521,8 @@ pub mod arrays {
     ///
     /// # Examples
     /// ```
+    /// use prosia_extensions::arrays::lower_bound_index;
+    ///
     /// let arr = [1.0, 3.0, 5.0, 7.0];
     ///
     /// // Insert before any elements ≥ 4.0 → index 2
@@ -554,6 +560,7 @@ pub mod arrays {
     ///
     /// # Examples
     /// ```
+    /// use prosia_extensions::arrays::upper_bound_index;
     /// let arr = [1.0, 3.0, 5.0, 7.0];
     ///
     /// // Largest element ≤ 4.0 is 3.0 at index 1
